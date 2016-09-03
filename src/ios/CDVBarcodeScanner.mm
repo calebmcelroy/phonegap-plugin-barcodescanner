@@ -70,6 +70,7 @@
 @property (nonatomic)         BOOL                        capturing;
 @property (nonatomic)         BOOL                        isFrontCamera;
 @property (nonatomic)         BOOL                        isShowFlipCameraButton;
+@property (nonatomic)         BOOL                        isShowToggleFlashButton;
 @property (nonatomic)         BOOL                        isFlipped;
 
 
@@ -153,6 +154,7 @@
     }
     BOOL preferFrontCamera = [options[@"preferFrontCamera"] boolValue];
     BOOL showFlipCameraButton = [options[@"showFlipCameraButton"] boolValue];
+    BOOL showToggleFlashButton = [options[@"showToggleFlashButton"] boolValue];
     // We allow the user to define an alternate xib file for loading the overlay.
     NSString *overlayXib = [options objectForKey:@"overlayXib"];
 
@@ -176,6 +178,10 @@
 
     if (showFlipCameraButton) {
       processor.isShowFlipCameraButton = true;
+    }
+    
+    if (showToggleFlashButton) {
+        processor.isShowToggleFlashButton = true;
     }
 
     processor.formats = options[@"formats"];
@@ -412,6 +418,22 @@ parentViewController:(UIViewController*)parentViewController
       self.isFlipped = NO;
     }
     [self performSelector:@selector(scanBarcode) withObject:nil afterDelay:0.1];
+}
+
+- (void)toggleFlash{
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    [device lockForConfiguration:nil];
+    if (device.torchAvailable == 1) {
+        if (device.torchMode == 0) {
+            [device setTorchMode:AVCaptureTorchModeOn];
+            [device setFlashMode:AVCaptureFlashModeOn];
+        }else{
+            [device setTorchMode:AVCaptureTorchModeOff];
+            [device setFlashMode:AVCaptureFlashModeOff];
+        }
+        
+    }
+    [device unlockForConfiguration];
 }
 
 //--------------------------------------------------------------------------
@@ -916,6 +938,11 @@ parentViewController:(UIViewController*)parentViewController
     [self.processor performSelector:@selector(flipCamera) withObject:nil afterDelay:0];
 }
 
+- (void)toggleFlashButtonPressed:(id)sender
+{
+    [self.processor performSelector:@selector(toggleFlash) withObject:nil afterDelay:0];
+}
+
 //--------------------------------------------------------------------------
 - (UIView *)buildOverlayViewFromXib
 {
@@ -966,6 +993,12 @@ parentViewController:(UIViewController*)parentViewController
                        target:(id)self
                        action:@selector(flipCameraButtonPressed:)
                        ];
+    
+    id toggleFlash = [[UIBarButtonItem alloc]
+                     initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                     target:(id)self
+                     action:@selector(toggleFlashButtonPressed:)
+                     ];
 
 #if USE_SHUTTER
     id shutterButton = [[UIBarButtonItem alloc]
@@ -980,10 +1013,14 @@ parentViewController:(UIViewController*)parentViewController
       toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace ,shutterButton,nil];
     }
 #else
-    if (_processor.isShowFlipCameraButton) {
-      toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, flipCamera,nil];
+    if (_processor.isShowFlipCameraButton && _processor.isShowToggleFlashButton) {
+        toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, flipCamera, toggleFlash,nil];
+    } else if (_processor.isShowFlipCameraButton) {
+        toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, flipCamera,nil];
+    } else if (_processor.isShowToggleFlashButton) {
+        toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, toggleFlash,nil];
     } else {
-      toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace,nil];
+        toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace,nil];
     }
 #endif
     bounds = overlayView.bounds;
