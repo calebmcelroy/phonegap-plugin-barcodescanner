@@ -999,8 +999,11 @@ parentViewController:(UIViewController*)parentViewController
                      target:(id)self
                      action:@selector(toggleFlashButtonPressed:)
                      ];
+                     
+    //toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, flexSpace, toggleFlash,nil];
+    toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, toggleFlash,nil];
 
-#if USE_SHUTTER
+/*#if USE_SHUTTER
     id shutterButton = [[UIBarButtonItem alloc]
                         initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
                         target:(id)self
@@ -1022,7 +1025,7 @@ parentViewController:(UIViewController*)parentViewController
     } else {
         toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace,nil];
     }
-#endif
+#endif*/
     bounds = overlayView.bounds;
 
     [toolbar sizeToFit];
