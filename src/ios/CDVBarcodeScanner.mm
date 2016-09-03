@@ -1013,7 +1013,7 @@ parentViewController:(UIViewController*)parentViewController
       toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace ,shutterButton,nil];
     }
 #else
-    if (_processor.isShowFlipCameraButton && _processor.isShowToggleFlashButton) {
+    /*if (_processor.isShowFlipCameraButton && _processor.isShowToggleFlashButton) {
         toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, flipCamera, toggleFlash,nil];
     } else if (_processor.isShowFlipCameraButton) {
         toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, flipCamera,nil];
@@ -1021,7 +1021,7 @@ parentViewController:(UIViewController*)parentViewController
         toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, toggleFlash,nil];
     } else {
         toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace,nil];
-    }
+    }*/
 #endif
     bounds = overlayView.bounds;
 
